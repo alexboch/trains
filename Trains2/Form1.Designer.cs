@@ -35,32 +35,32 @@
             this.label1 = new System.Windows.Forms.Label();
             this.imageBox1 = new Emgu.CV.UI.ImageBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.statusLabel = new System.Windows.Forms.Label();
             this.contoursImageBox = new Emgu.CV.UI.ImageBox();
-            this.originalImageBox = new Emgu.CV.UI.ImageBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
+            this.originalImageBox = new Emgu.CV.UI.ImageBox();
+            this.button3 = new System.Windows.Forms.Button();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.startButton = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.highThTextBox = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.lowThTextBox = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
-            this.startButton = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
-            this.statusLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.imageBox1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.contoursImageBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.originalImageBox)).BeginInit();
             this.tableLayoutPanel2.SuspendLayout();
-            this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // button1
@@ -126,6 +126,15 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(579, 283);
             this.tableLayoutPanel1.TabIndex = 10;
             // 
+            // statusLabel
+            // 
+            this.statusLabel.AutoSize = true;
+            this.statusLabel.Location = new System.Drawing.Point(3, 263);
+            this.statusLabel.Name = "statusLabel";
+            this.statusLabel.Size = new System.Drawing.Size(19, 13);
+            this.statusLabel.TabIndex = 12;
+            this.statusLabel.Text = "__";
+            // 
             // contoursImageBox
             // 
             this.contoursImageBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -137,18 +146,6 @@
             this.contoursImageBox.Size = new System.Drawing.Size(274, 202);
             this.contoursImageBox.TabIndex = 6;
             this.contoursImageBox.TabStop = false;
-            // 
-            // originalImageBox
-            // 
-            this.originalImageBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.originalImageBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.originalImageBox.Location = new System.Drawing.Point(3, 23);
-            this.originalImageBox.Name = "originalImageBox";
-            this.originalImageBox.Size = new System.Drawing.Size(293, 202);
-            this.originalImageBox.TabIndex = 2;
-            this.originalImageBox.TabStop = false;
             // 
             // label2
             // 
@@ -167,6 +164,28 @@
             this.label3.Size = new System.Drawing.Size(50, 13);
             this.label3.TabIndex = 5;
             this.label3.Text = "Контуры";
+            // 
+            // originalImageBox
+            // 
+            this.originalImageBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.originalImageBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.originalImageBox.Location = new System.Drawing.Point(3, 23);
+            this.originalImageBox.Name = "originalImageBox";
+            this.originalImageBox.Size = new System.Drawing.Size(293, 202);
+            this.originalImageBox.TabIndex = 2;
+            this.originalImageBox.TabStop = false;
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(3, 231);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(92, 23);
+            this.button3.TabIndex = 7;
+            this.button3.Text = "Пауза";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // tableLayoutPanel2
             // 
@@ -194,6 +213,46 @@
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel2.Size = new System.Drawing.Size(185, 378);
             this.tableLayoutPanel2.TabIndex = 11;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.textBox2);
+            this.groupBox1.Controls.Add(this.label5);
+            this.groupBox1.Location = new System.Drawing.Point(3, 234);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(179, 68);
+            this.groupBox1.TabIndex = 9;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Параметры Хафа";
+            this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
+            // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(7, 37);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(121, 20);
+            this.textBox2.TabIndex = 1;
+            this.textBox2.Text = "30";
+            this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(7, 20);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(38, 13);
+            this.label5.TabIndex = 0;
+            this.label5.Text = "Порог";
+            // 
+            // startButton
+            // 
+            this.startButton.Location = new System.Drawing.Point(3, 75);
+            this.startButton.Name = "startButton";
+            this.startButton.Size = new System.Drawing.Size(148, 23);
+            this.startButton.TabIndex = 6;
+            this.startButton.Text = "Анализировать файл";
+            this.startButton.UseVisualStyleBackColor = true;
+            this.startButton.Click += new System.EventHandler(this.button2_Click);
             // 
             // groupBox2
             // 
@@ -232,7 +291,7 @@
             this.lowThTextBox.Name = "lowThTextBox";
             this.lowThTextBox.Size = new System.Drawing.Size(121, 20);
             this.lowThTextBox.TabIndex = 1;
-            this.lowThTextBox.Text = "20";
+            this.lowThTextBox.Text = "50";
             this.lowThTextBox.TextChanged += new System.EventHandler(this.lowThTextBox_TextChanged);
             // 
             // label7
@@ -244,46 +303,6 @@
             this.label7.TabIndex = 0;
             this.label7.Text = "Нижний порог";
             // 
-            // startButton
-            // 
-            this.startButton.Location = new System.Drawing.Point(3, 75);
-            this.startButton.Name = "startButton";
-            this.startButton.Size = new System.Drawing.Size(148, 23);
-            this.startButton.TabIndex = 6;
-            this.startButton.Text = "Анализировать файл";
-            this.startButton.UseVisualStyleBackColor = true;
-            this.startButton.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.textBox2);
-            this.groupBox1.Controls.Add(this.label5);
-            this.groupBox1.Location = new System.Drawing.Point(3, 234);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(179, 68);
-            this.groupBox1.TabIndex = 9;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Параметры Хафа";
-            this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
-            // 
-            // textBox2
-            // 
-            this.textBox2.Location = new System.Drawing.Point(7, 37);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(121, 20);
-            this.textBox2.TabIndex = 1;
-            this.textBox2.Text = "30";
-            this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(7, 20);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(38, 13);
-            this.label5.TabIndex = 0;
-            this.label5.Text = "Порог";
-            // 
             // button2
             // 
             this.button2.Location = new System.Drawing.Point(3, 308);
@@ -293,25 +312,6 @@
             this.button2.Text = "С камеры";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click_1);
-            // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(3, 231);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(92, 23);
-            this.button3.TabIndex = 7;
-            this.button3.Text = "Пауза";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
-            // statusLabel
-            // 
-            this.statusLabel.AutoSize = true;
-            this.statusLabel.Location = new System.Drawing.Point(3, 263);
-            this.statusLabel.Name = "statusLabel";
-            this.statusLabel.Size = new System.Drawing.Size(19, 13);
-            this.statusLabel.TabIndex = 12;
-            this.statusLabel.Text = "__";
             // 
             // Form1
             // 
@@ -330,10 +330,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.originalImageBox)).EndInit();
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
 
         }

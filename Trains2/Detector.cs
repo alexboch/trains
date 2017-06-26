@@ -106,7 +106,7 @@ namespace RailsDetector.RailsDetector
         /// <summary>
         /// Матрица для морфологичеких изменений.
         /// </summary>
-        //private Mat _morphologyMatrix = Cv2.GetStructuringElement(MorphShapes.Cross, new Size(1, 7));
+        //private Mat _morphologyMatrix = CvInvoke.GetStructuringElement(ElementShape.Cross,new Size(1, 7),new Point(-1,-1));
         private Mat _morphologyMatrix = CvInvoke.GetStructuringElement(ElementShape.Rectangle, new Size(1, 4),new Point(-1,-1));
         /// <summary>
         /// Последние найденные рельсы.
@@ -135,29 +135,13 @@ namespace RailsDetector.RailsDetector
 
         private int _safeCountMax = 5;
 
-        
+        private const int FrameHeight = 720;
 
         public Detector()
         {
             spline = new CubicSpline();
             spline.BuildSpline((new double[] { 76, 210, 268, 307, 334, 350, 395 }),
                                 new double[] { 12.7, 25.4, 38.1, 50.8, 63.5, 76.2, 355.6 });//12.7--длина грузового полувагона от стенки до стенки
-        }
-
-
-        private void OrderLines(List<LineSegment2D> leftLines, List<LineSegment2D> rightLines)
-        {
-            for (int i = 0; i < leftLines.Count; i++)
-            {
-                if (leftLines[i].P1.X > leftLines[i].P2.X)
-                {
-                    leftLines[i]=new LineSegment2D(leftLines[i].P2,leftLines[i].P1);
-                }
-            }
-            for (int i = 0; i < rightLines.Count; i++)
-            {
-                
-            }
         }
 
         /// <summary>
@@ -171,16 +155,14 @@ namespace RailsDetector.RailsDetector
             List<LineSegment2D> filteredRightLines = new List<LineSegment2D>();
             List<double> angleDifferences = new List<double>();
             _treatment += 1;
-
-            //inputImage.Line(new Point(0,0),new Point(500,15),Scalar.Blue);
-
-            FilterLines(filteredLeftLines, filteredRightLines, GetLines(inputImage), angleDifferences);
+            var lines = GetLines(inputImage);
+            FilterLines(filteredLeftLines, filteredRightLines, lines, angleDifferences);
 
 
 
-            /*углы заменены на отрицательные*/
-            SetLastRail(filteredLeftLines, -_averageAngleLeft, ref _lineLeftNotExistsFrames, ref _lastLeftRail);
-            SetLastRail(filteredRightLines, -_averageAngleRight, ref _lineRightNotExistsFrames, ref _lastRightRail);
+            
+            SetLastRail(filteredLeftLines, _averageAngleLeft, ref _lineLeftNotExistsFrames, ref _lastLeftRail);
+            SetLastRail(filteredRightLines, _averageAngleRight, ref _lineRightNotExistsFrames, ref _lastRightRail);
             //Метод показал свою недееспособность, он просто обнаруживал стрелки, либо крутые углы, работал нестабильно.
             //CheckAngle(angleDifferences);
             
@@ -433,11 +415,16 @@ namespace RailsDetector.RailsDetector
         {
             Mat edges = new Mat();
             // Рельсы обычно смещены влево, а не по центру.
-            //Mat edges_tmp = new Mat(inputImage, new Rect(_cannyX, 720 - _horizont, 1280 - _cannyX * 2, _horizont));
-            Mat edges_tmp = new Mat(inputImage, new Rectangle(_cannyX, 720 - _horizont, 210, _horizont));
+            Mat edges_tmp = new Mat(inputImage, new Rectangle(_cannyX, FrameHeight - _horizont, 210, _horizont));
+            
+            //CvInvoke.EqualizeHist(edges_tmp,edges_tmp);
             CvInvoke.Canny(edges_tmp, edges, LowerThreshold, UpperThreshold);
-            CvInvoke.MorphologyEx(edges, edges, MorphOp.Erode, _morphologyMatrix,new Point(-1,-1),1,BorderType.Constant,CvInvoke.MorphologyDefaultBorderValue);
-            CvInvoke.MorphologyEx(edges, edges, MorphOp.Dilate, _morphologyMatrix, new Point(-1, -1), 1, BorderType.Constant, CvInvoke.MorphologyDefaultBorderValue);
+            //CvInvoke.MorphologyEx(edges, edges, MorphOp.Erode, _morphologyMatrix,new Point(-1,-1),1,BorderType.Constant,CvInvoke.MorphologyDefaultBorderValue);
+            //CvInvoke.MorphologyEx(edges, edges, MorphOp.Dilate, _morphologyMatrix, new Point(-1, -1), 1, BorderType.Constant, CvInvoke.MorphologyDefaultBorderValue);
+
+            CvInvoke.MorphologyEx(edges, edges, MorphOp.Open, _morphologyMatrix, new Point(-1, -1), 1, BorderType.Constant, CvInvoke.MorphologyDefaultBorderValue);
+            //CvInvoke.MorphologyEx(edges, edges, MorphOp.Gradient, _morphologyMatrix, new Point(-1, -1), 1, BorderType.Constant, CvInvoke.MorphologyDefaultBorderValue);
+
             Edges = edges;
             //Cv2.MorphologyEx(edges, edges, MorphTypes.ERODE, _morphologyMatrix);
             //Cv2.MorphologyEx(edges, edges, MorphTypes.DILATE, _morphologyMatrix);
@@ -451,7 +438,7 @@ namespace RailsDetector.RailsDetector
         /// <param name="filteredLines">Набор линий, из которых надо создать рельсу.</param>
         /// <param name="angle">Угол под которым следует строить рельсу.</param>
         /// <returns>Выделенная из набора линий рельса.</returns>
-        private LineSegment2D? GetRail(List<LineSegment2D> filteredLines, double angle)
+        private LineSegment2D? GetRail(List<LineSegment2D> filteredLines, double angle)//todo:Проверить на возможные ошибки
         {
             Point? topPoint = GetMaxPoint(filteredLines);
             if (topPoint != null)
@@ -463,17 +450,14 @@ namespace RailsDetector.RailsDetector
                     _lastRails.RemoveAt(0);
                 }
                 //Смешение из за обрезания по Canny
-                //lastRail.P1.Y += 720 - _horizont;
-                //lastRail.P1.X += _cannyX;
-                //lastRail.P2.Y = 720;
                 int newX = lastRail.P1.X+ _cannyX;
-                int newY = lastRail.P1.Y + 720 - _horizont;
+                int newY = lastRail.P1.Y + FrameHeight - _horizont;
                 lastRail.P1=new Point(newX,newY);
 
                 //Формула для нахождения координаты X по углу, известной точки P1 и Y
-                int newX2= (int)Math.Round((lastRail.P2.Y - lastRail.P1.Y + Math.Tan(angle) * lastRail.P1.X) / Math.Tan(angle));
-                lastRail.P2=new Point(newX2,720);
-                //lastRail.P2.X = (int)Math.Round((lastRail.P2.Y - lastRail.P1.Y + Math.Tan(angle) * lastRail.P1.X) / Math.Tan(angle));
+                int newX2= (int)Math.Round((FrameHeight- lastRail.P1.Y + Math.Tan(angle) * lastRail.P1.X) / Math.Tan(angle));
+                lastRail.P2=new Point(newX2,FrameHeight);
+               
                 return lastRail;
             }
             return null;
@@ -514,7 +498,6 @@ namespace RailsDetector.RailsDetector
             LineSegment2D top = new LineSegment2D();
             if (lines.Count != 0)
             {
-                // top.P1.Y = 2000;
                 top.P1=new Point(top.P1.X,2000);
                 foreach (var item in lines)
                 {

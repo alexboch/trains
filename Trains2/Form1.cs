@@ -19,6 +19,9 @@ namespace Trains2
 {
     public partial class Form1 : Form
     {
+        /// <summary>
+        /// Объект для захвата видео
+        /// </summary>
         private Capture _capture;
         private Detector _detector=new Detector();
         private ImagePreprocessor _imp;
@@ -45,16 +48,12 @@ namespace Trains2
 
         private int _roiWidth = 210, _roiHeight = 400;
         
-        const int Fps = 35;
+        const int DefaultFps = 35;
         public Form1()
         {
             InitializeComponent();
-            timer1.Interval =(int)Math.Round(1.0 / Fps*1000);
             timer1.Tick += ProcessVideo;
-            //_imp=new ImagePreprocessor(20,120);
             _roi=new Rectangle(_leftX,_topY,_roiWidth,_roiHeight);
-            
-            //backgroundWorker1.DoWork += ProcessVideo;
         }
 
 
@@ -74,47 +73,28 @@ namespace Trains2
                 {
                     button3.Text = "Пауза";
                     if(frame.Size!=_frameSize)
-                    CvInvoke.Resize(frame, frame, _frameSize);
+                    CvInvoke.Resize(frame, frame, _frameSize);//изменение размера полученного кадра
                     var info = _detector.GetRails(frame);
-                    //contoursImageBox.Image = _detector.ContoursMat;
-                    //contoursImageBox.Image = _detector.Image;
-
-                    //CvInvoke.Line(frame,new Point(0,0),new Point(500,15),Colors.Red,2);
-                    CvInvoke.Rectangle(frame, new Rectangle(980, 0, 850, 60), Colors.White);
+                    CvInvoke.Rectangle(frame, new Rectangle(980, 0, 850, 100), Colors.White);
                     string distanceMsg = $"Distance to object:{info.Meters:N3} ";
                     CvInvoke.PutText(frame, info.IsSafe ? "Safe zone more 100m" : distanceMsg,
                         new Point(950, 40), FontFace.HersheyPlain, 1, info.IsSafe ? Colors.Green : Colors.Red);
                     CvInvoke.PutText(frame, distanceMsg, new Point(950, 80),
                         FontFace.HersheyPlain, 1, Colors.Green);
-                    if (info.RightRail != null)
+                    if (info.RightRail != null)//если найдена правая рельса
                     {
                         var rightRail = info.RightRail.Value;
                         CvInvoke.Line(frame, rightRail.P1, rightRail.P2, info.IsSafe ? Colors.Green : Colors.Red, 4);
-                        //inputImage.Line(rightRail.P1, rightRail.P2, info.IsSafe ? Scalar.Green : Scalar.Red, 4, LineTypes.AntiAlias, 0);
-
                     }
-                    if (info.LeftRail != null)
+                    if (info.LeftRail != null)//если найдена левая рельса
                     {
                         var leftRail = info.LeftRail.Value;
-                        //inputImage.Line(leftRail.P1, leftRail.P2, info.IsSafe ? Scalar.Green : Scalar.Red, 4, LineTypes.AntiAlias, 0);
                         CvInvoke.Line(frame, leftRail.P1, leftRail.P2, info.IsSafe ? Colors.Green : Colors.Red, 4);
                     }
-                    statusLabel.Text = $"Дистанция:{info.Meters:N3}";
+                    statusLabel.Text = $"Дистанция:{info.Meters:N3}";//вывод дистанции в label
                     statusLabel.BackColor = info.IsSafe?Color.Green:Color.Red;
 
-                    //string lt = lowThTextBox.Text.Replace(".",",");
-
-                    //double lowThreshold;
-                    //if(double.TryParse(lt,out lowThreshold))
-                    //    _imp.LowThreshold = lowThreshold;
-
-                    //string ht = highThTextBox.Text.Replace(".", ",");
-
-                    //double highThreshold;
-                    //if (double.TryParse(ht, out highThreshold))
-                    //    _imp.HighThreshold = highThreshold;
-
-                    //_imp.HighThreshold = Double.Parse(lowThTextBox.Text.Replace(".",","));
+                 
                     Mat resizedFrame = new Mat();
                     //CvInvoke.Rectangle(frame, _roi, Colors.Green,3);//нарисовать зону поиска
                     CvInvoke.Resize(frame, resizedFrame, new Size(originalImageBox.Width, originalImageBox.Height));
@@ -126,40 +106,12 @@ namespace Trains2
                     CvInvoke.Resize(_detector.Edges, contoursResized,
                         new Size(contoursImageBox.Width, contoursImageBox.Height));
                     contoursImageBox.Image = contoursResized;
-                    //originalImageBox.Image = frame;
-                    //Mat frameToProcess=new Mat(frame,_roi);
-                    //contoursImageBox.Image = _imp.PrepareImage(frameToProcess);
-                    //equalizedHistImageBox.Image = _imp.Equalized;
-                    //imageBox2.Image = _imp.SobelMat;
-
-                    //Mat resizedContoursFrame = new Mat();
-                    //CvInvoke.Resize();
+                   
                 }
             }
         }
 
 
-        /// <summary>
-        /// Обрабатывает видео в отдельном потоке
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        //private void ProcessVideo(object sender, DoWorkEventArgs e)
-        //{
-        //    //var sourceVideo = e.Argument as FrameSource;
-        //    //var sizes = new[] {originalPictureBox.Width, originalPictureBox.Height};
-        //    //Mat originalFrame=new Mat(sizes,MatType.CV_16S);
-        //    //while (true)
-        //    //{
-        //    //    sourceVideo.NextFrame(originalFrame);
-        //    //    originalFrame.Resize(new OpenCvSharp.Size(originalPictureBox.Width, originalPictureBox.Height));
-
-        //    //    var ms = originalFrame.ToMemoryStream();
-        //    //    var bitmap=new Bitmap(ms,false);
-                
-        //    //    originalPictureBox.Invoke((Action)(() =>originalPictureBox.Image=bitmap ));
-        //    //}
-        //}
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -193,21 +145,7 @@ namespace Trains2
                 _detector.HoughThreshold = ht;
         }
 
-        private void button2_Click_1(object sender, EventArgs e)
-        {
-            try
-            {
-                _capture = new Capture(0);//захват с самой первой камеры
-                timer1.Start();
-
-            }
-            catch (Exception exc)
-            {
-                MessageBox.Show(($@"Error
- Message:{exc.Message} Source:{exc.Source}
- StackTrace:{exc.StackTrace}"));
-            }
-        }
+        
 
         private void button3_Click(object sender, EventArgs e)
         {
@@ -224,13 +162,37 @@ namespace Trains2
             }
         }
 
+        /// <summary>
+        /// Устанавливает интервал в зависимости от частоты кадров
+        /// </summary>
+        private void SetTimerInterval(double fps)
+        {
+            timer1.Interval = (int)Math.Round(1.0 / fps * 1000);
+        }
+
+        private void button2_Click_1(object sender, EventArgs e)
+        {
+            try
+            {
+                _capture = new Capture(0);//захват с самой первой камеры
+                SetTimerInterval(DefaultFps);//устанавливаю фпс по умолчанию, не получилось получить фпс камеры
+                timer1.Start();
+
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show(($@"Error
+ Message:{exc.Message} Source:{exc.Source}
+ StackTrace:{exc.StackTrace}"));
+            }
+        }
+
         private void button2_Click(object sender, EventArgs e)
         {
             try
             {
-                //var sourceVideo = Cv2.CreateFrameSource_Video(fileNameTextBox.Text);
-                //backgroundWorker1.RunWorkerAsync(sourceVideo);
                 _capture=new Capture(fileNameTextBox.Text);
+                SetTimerInterval(_capture.GetCaptureProperty(CapProp.Fps));
                 timer1.Start();
                 
             }
