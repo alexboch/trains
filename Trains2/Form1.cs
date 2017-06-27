@@ -23,12 +23,8 @@ namespace Trains2
         /// Объект для захвата видео
         /// </summary>
         private Capture _capture;
-        private Detector _detector=new Detector();
-        private ImagePreprocessor _imp;
-        /// <summary>
-        /// Зона, в которой ищем рельсы
-        /// </summary>
-        private Rectangle _roi;
+        private Detector _detector = new Detector();
+
         /// <summary>
         /// Горизонт в пикселях снизу
         /// </summary>
@@ -37,33 +33,37 @@ namespace Trains2
         /// <summary>
         /// размер кадра в пикселях, требуемый для обработки
         /// </summary>
-        private Size _frameSize=new Size(1280,720);
+        private Size _frameSize = new Size(1280, 720);
 
-
+        private VideoWriter _videoWriter;
+        private string _outputFilePath;
 
         /// <summary>
-        /// Координата левого верхнего угла прямоугольника поиска
+        /// Частота кадров по умолчанию
         /// </summary>
-        private int _leftX = 500, _topY = 320;
-
-        private int _roiWidth = 210, _roiHeight = 400;
-        
         const int DefaultFps = 35;
         public Form1()
         {
             InitializeComponent();
-            timer1.Tick += ProcessVideo;
-            _roi=new Rectangle(_leftX,_topY,_roiWidth,_roiHeight);
+            timer1.Tick += ProcessVideo;//устанавливаем обработчик, который будет вызываться по таймеру
         }
 
 
-        
+        private void StopVideo()
+        {
+            stopButton.Enabled = false;
+            pauseButton.Enabled = false;
+            _videoWriter?.Dispose();
+            timer1.Stop();
+            OutputFilePanel.Enabled = true;
+        }
+
         /// <summary>
         /// Обработка кадров
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ProcessVideo(object sender,EventArgs e)
+        private void ProcessVideo(object sender, EventArgs e)
         {
             if (_capture != null)
             {
@@ -71,42 +71,53 @@ namespace Trains2
 
                 if (frame != null)
                 {
-                    button3.Text = "Пауза";
-                    if(frame.Size!=_frameSize)
-                    CvInvoke.Resize(frame, frame, _frameSize);//изменение размера полученного кадра
-                    var info = _detector.GetRails(frame);
-                    CvInvoke.Rectangle(frame, new Rectangle(980, 0, 850, 100), Colors.White);
+                    pauseButton.Enabled = true;
+                    stopButton.Enabled = true;
+                    pauseButton.Text = "Пауза";
+                    if (frame.Size != _frameSize)
+                        CvInvoke.Resize(frame, frame, _frameSize); //изменение размера полученного кадра
+                    var info = _detector.GetRails(frame); //получаем информацию о рельсах
+                    //CvInvoke.Rectangle(frame, new Rectangle(980, 0, 850, 100), Colors.White);
                     string distanceMsg = $"Distance to object:{info.Meters:N3} ";
                     CvInvoke.PutText(frame, info.IsSafe ? "Safe zone more 100m" : distanceMsg,
                         new Point(950, 40), FontFace.HersheyPlain, 1, info.IsSafe ? Colors.Green : Colors.Red);
                     CvInvoke.PutText(frame, distanceMsg, new Point(950, 80),
                         FontFace.HersheyPlain, 1, Colors.Green);
-                    if (info.RightRail != null)//если найдена правая рельса
+                    if (info.RightRail != null) //если найдена правая рельса
                     {
                         var rightRail = info.RightRail.Value;
                         CvInvoke.Line(frame, rightRail.P1, rightRail.P2, info.IsSafe ? Colors.Green : Colors.Red, 4);
                     }
-                    if (info.LeftRail != null)//если найдена левая рельса
+                    if (info.LeftRail != null) //если найдена левая рельса
                     {
                         var leftRail = info.LeftRail.Value;
                         CvInvoke.Line(frame, leftRail.P1, leftRail.P2, info.IsSafe ? Colors.Green : Colors.Red, 4);
                     }
-                    statusLabel.Text = $"Дистанция:{info.Meters:N3}";//вывод дистанции в label
-                    statusLabel.BackColor = info.IsSafe?Color.Green:Color.Red;
+                    statusLabel.Text = $"Дистанция:{info.Meters:N3}"; //вывод дистанции в label
+                    statusLabel.BackColor = info.IsSafe ? Color.Green : Color.Red;
 
-                 
+
                     Mat resizedFrame = new Mat();
                     //CvInvoke.Rectangle(frame, _roi, Colors.Green,3);//нарисовать зону поиска
                     CvInvoke.Resize(frame, resizedFrame, new Size(originalImageBox.Width, originalImageBox.Height));
 
                     originalImageBox.Image = resizedFrame;
-
-
+                    if (writeOutputCheckBox.Checked) //если отметили, что нужно записывать выходной файл
+                    {
+                        if (_videoWriter != null)
+                        {
+                            _videoWriter.Write(frame);//запись кадра в выходной файл
+                        }
+                    }
                     Mat contoursResized = new Mat();
                     CvInvoke.Resize(_detector.Edges, contoursResized,
                         new Size(contoursImageBox.Width, contoursImageBox.Height));
                     contoursImageBox.Image = contoursResized;
-                   
+
+                }
+                else
+                {
+                   StopVideo();
                 }
             }
         }
@@ -123,14 +134,14 @@ namespace Trains2
         {
             int lt;
             if (int.TryParse((sender as TextBox).Text, out lt))
-                _detector.LowerThreshold = lt;
+                _detector.LowerThreshold = lt;//устанавливаем нижний порог для детектора Кэнни
         }
 
         private void highThTextBox_TextChanged(object sender, EventArgs e)
         {
             int ht;
             if (int.TryParse((sender as TextBox).Text, out ht))
-                _detector.UpperThreshold = ht;
+                _detector.UpperThreshold = ht;//устанавливаем верхний порог для детектора Кэнни
         }
 
         private void groupBox1_Enter(object sender, EventArgs e)
@@ -142,10 +153,10 @@ namespace Trains2
         {
             int ht;
             if (int.TryParse((sender as TextBox).Text, out ht))
-                _detector.HoughThreshold = ht;
+                _detector.HoughThreshold = ht;//устанавливаем порог для преобразования Хафа
         }
 
-        
+
 
         private void button3_Click(object sender, EventArgs e)
         {
@@ -176,7 +187,15 @@ namespace Trains2
             {
                 _capture = new Capture(0);//захват с самой первой камеры
                 SetTimerInterval(DefaultFps);//устанавливаю фпс по умолчанию, не получилось получить фпс камеры
+                _videoWriter?.Dispose();
+                if (writeOutputCheckBox.Checked)
+                {
+                    _videoWriter=new VideoWriter(outputFileTextBox.Text,DefaultFps,_frameSize,true);
+                }
+                OutputFilePanel.Enabled = false;
+                
                 timer1.Start();
+                
 
             }
             catch (Exception exc)
@@ -191,10 +210,19 @@ namespace Trains2
         {
             try
             {
-                _capture=new Capture(fileNameTextBox.Text);
-                SetTimerInterval(_capture.GetCaptureProperty(CapProp.Fps));
-                timer1.Start();
+                _capture = new Capture(fileNameTextBox.Text);//создаем объект для чтения кадров видеофайла
+                double fps = _capture.GetCaptureProperty(CapProp.Fps);//получаем фпс видеофайла
+                SetTimerInterval(fps);
+                _videoWriter?.Dispose();
                 
+                if (writeOutputCheckBox.Checked)//если поставили галочку на запись
+                {
+                    _videoWriter = new VideoWriter(outputFileTextBox.Text, (int)fps, _frameSize, true);
+                }
+                OutputFilePanel.Enabled = false;//деактивировать панель с настройками выходного файла
+                
+                timer1.Start();
+
             }
             catch (Exception exc)
             {
@@ -207,6 +235,25 @@ namespace Trains2
         private void fileNameTextBox_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void browseSaveButton_Click(object sender, EventArgs e)
+        {
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                outputFileTextBox.Text = saveFileDialog1.FileName;//написать путь выходного файла
+            }
+        }
+
+        private void stopButton_Click(object sender, EventArgs e)
+        {
+
+            StopVideo();
+        }
+
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            _videoWriter?.Dispose();//освободить ресурсы записывателя видеофайлов
         }
     }
 }

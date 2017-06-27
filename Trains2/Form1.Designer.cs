@@ -40,7 +40,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.originalImageBox = new Emgu.CV.UI.ImageBox();
-            this.button3 = new System.Windows.Forms.Button();
+            this.pauseButton = new System.Windows.Forms.Button();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.textBox2 = new System.Windows.Forms.TextBox();
@@ -54,6 +54,13 @@
             this.button2 = new System.Windows.Forms.Button();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.writeOutputCheckBox = new System.Windows.Forms.CheckBox();
+            this.outputFileTextBox = new System.Windows.Forms.TextBox();
+            this.OutputFilePanel = new System.Windows.Forms.TableLayoutPanel();
+            this.label4 = new System.Windows.Forms.Label();
+            this.browseSaveButton = new System.Windows.Forms.Button();
+            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.stopButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.imageBox1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.contoursImageBox)).BeginInit();
@@ -61,6 +68,7 @@
             this.tableLayoutPanel2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.OutputFilePanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // button1
@@ -110,26 +118,28 @@
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 51.6791F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 48.3209F));
-            this.tableLayoutPanel1.Controls.Add(this.statusLabel, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.contoursImageBox, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.statusLabel, 0, 4);
             this.tableLayoutPanel1.Controls.Add(this.label2, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.label3, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.originalImageBox, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.button3, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.pauseButton, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.stopButton, 0, 3);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(16, 11);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 4;
+            this.tableLayoutPanel1.RowCount = 5;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(579, 283);
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 31F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 15F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(579, 314);
             this.tableLayoutPanel1.TabIndex = 10;
             // 
             // statusLabel
             // 
             this.statusLabel.AutoSize = true;
-            this.statusLabel.Location = new System.Drawing.Point(3, 263);
+            this.statusLabel.Location = new System.Drawing.Point(3, 299);
             this.statusLabel.Name = "statusLabel";
             this.statusLabel.Size = new System.Drawing.Size(19, 13);
             this.statusLabel.TabIndex = 12;
@@ -143,7 +153,7 @@
             this.contoursImageBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.contoursImageBox.Location = new System.Drawing.Point(302, 23);
             this.contoursImageBox.Name = "contoursImageBox";
-            this.contoursImageBox.Size = new System.Drawing.Size(274, 202);
+            this.contoursImageBox.Size = new System.Drawing.Size(274, 213);
             this.contoursImageBox.TabIndex = 6;
             this.contoursImageBox.TabStop = false;
             // 
@@ -173,19 +183,20 @@
             this.originalImageBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.originalImageBox.Location = new System.Drawing.Point(3, 23);
             this.originalImageBox.Name = "originalImageBox";
-            this.originalImageBox.Size = new System.Drawing.Size(293, 202);
+            this.originalImageBox.Size = new System.Drawing.Size(293, 213);
             this.originalImageBox.TabIndex = 2;
             this.originalImageBox.TabStop = false;
             // 
-            // button3
+            // pauseButton
             // 
-            this.button3.Location = new System.Drawing.Point(3, 231);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(92, 23);
-            this.button3.TabIndex = 7;
-            this.button3.Text = "Пауза";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.pauseButton.Enabled = false;
+            this.pauseButton.Location = new System.Drawing.Point(3, 242);
+            this.pauseButton.Name = "pauseButton";
+            this.pauseButton.Size = new System.Drawing.Size(92, 23);
+            this.pauseButton.TabIndex = 7;
+            this.pauseButton.Text = "Пауза";
+            this.pauseButton.UseVisualStyleBackColor = true;
+            this.pauseButton.Click += new System.EventHandler(this.button3_Click);
             // 
             // tableLayoutPanel2
             // 
@@ -313,16 +324,91 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click_1);
             // 
+            // writeOutputCheckBox
+            // 
+            this.writeOutputCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.writeOutputCheckBox.AutoSize = true;
+            this.writeOutputCheckBox.Location = new System.Drawing.Point(3, 36);
+            this.writeOutputCheckBox.Name = "writeOutputCheckBox";
+            this.writeOutputCheckBox.Size = new System.Drawing.Size(169, 17);
+            this.writeOutputCheckBox.TabIndex = 12;
+            this.writeOutputCheckBox.Text = "Записывать выходной файл";
+            this.writeOutputCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // outputFileTextBox
+            // 
+            this.outputFileTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.outputFileTextBox.Location = new System.Drawing.Point(200, 33);
+            this.outputFileTextBox.Name = "outputFileTextBox";
+            this.outputFileTextBox.Size = new System.Drawing.Size(152, 20);
+            this.outputFileTextBox.TabIndex = 13;
+            // 
+            // OutputFilePanel
+            // 
+            this.OutputFilePanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.OutputFilePanel.ColumnCount = 2;
+            this.OutputFilePanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.OutputFilePanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 253F));
+            this.OutputFilePanel.Controls.Add(this.outputFileTextBox, 1, 1);
+            this.OutputFilePanel.Controls.Add(this.writeOutputCheckBox, 0, 1);
+            this.OutputFilePanel.Controls.Add(this.label4, 1, 0);
+            this.OutputFilePanel.Controls.Add(this.browseSaveButton, 1, 2);
+            this.OutputFilePanel.Location = new System.Drawing.Point(19, 331);
+            this.OutputFilePanel.Name = "OutputFilePanel";
+            this.OutputFilePanel.RowCount = 3;
+            this.OutputFilePanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.OutputFilePanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
+            this.OutputFilePanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
+            this.OutputFilePanel.Size = new System.Drawing.Size(450, 88);
+            this.OutputFilePanel.TabIndex = 14;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(200, 0);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(133, 13);
+            this.label4.TabIndex = 14;
+            this.label4.Text = "Путь к выходному файлу";
+            // 
+            // browseSaveButton
+            // 
+            this.browseSaveButton.Location = new System.Drawing.Point(200, 59);
+            this.browseSaveButton.Name = "browseSaveButton";
+            this.browseSaveButton.Size = new System.Drawing.Size(96, 23);
+            this.browseSaveButton.TabIndex = 15;
+            this.browseSaveButton.Text = "Выбрать путь";
+            this.browseSaveButton.UseVisualStyleBackColor = true;
+            this.browseSaveButton.Click += new System.EventHandler(this.browseSaveButton_Click);
+            // 
+            // saveFileDialog1
+            // 
+            this.saveFileDialog1.DefaultExt = "avi";
+            this.saveFileDialog1.Filter = "Video Files (*.avi)|*.avi;";
+            // 
+            // stopButton
+            // 
+            this.stopButton.Enabled = false;
+            this.stopButton.Location = new System.Drawing.Point(3, 273);
+            this.stopButton.Name = "stopButton";
+            this.stopButton.Size = new System.Drawing.Size(75, 23);
+            this.stopButton.TabIndex = 15;
+            this.stopButton.Text = "Стоп";
+            this.stopButton.UseVisualStyleBackColor = true;
+            this.stopButton.Click += new System.EventHandler(this.stopButton_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(799, 417);
+            this.Controls.Add(this.OutputFilePanel);
             this.Controls.Add(this.tableLayoutPanel2);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.imageBox1);
             this.Name = "Form1";
             this.Text = "Form1";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             ((System.ComponentModel.ISupportInitialize)(this.imageBox1)).EndInit();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
@@ -334,6 +420,8 @@
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            this.OutputFilePanel.ResumeLayout(false);
+            this.OutputFilePanel.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -362,8 +450,15 @@
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button pauseButton;
         private System.Windows.Forms.Label statusLabel;
+        private System.Windows.Forms.CheckBox writeOutputCheckBox;
+        private System.Windows.Forms.TextBox outputFileTextBox;
+        private System.Windows.Forms.TableLayoutPanel OutputFilePanel;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Button browseSaveButton;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+        private System.Windows.Forms.Button stopButton;
     }
 }
 
